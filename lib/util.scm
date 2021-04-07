@@ -26,7 +26,10 @@
    not-java-null?
    ..
    chain
-   repeat-accumulate)
+   repeat-accumulate
+   pi
+   indexed-for-each
+   interactive-select)
   (import (except (kawa base) match)
 	  (rnrs hashtables (6))
 	  (rnrs sorting (6))
@@ -37,6 +40,8 @@
 	  (class java.lang.reflect Method)
 	  (class java.lang Thread))
   (begin
+
+    (define pi 3.1415926535)
 
     (define-syntax ..
       (lambda (expr)
@@ -222,6 +227,14 @@
 		    (display (format "~a : ~a\n" pk cnt)))
 		  padded-keys count-reps)))
 
+    (define (indexed-for-each f l)
+      (let ((i 0))
+	(for-each (lambda (el)
+		    (f el i)
+		    (set! i (+ i 1)))
+		  l))
+      (if #f #t))
+
     (define (tabulate lst)
       (if (vector? lst)
 	  (tabulate (vector->list lst))
@@ -260,5 +273,26 @@
       (cond ((<= n 0) 'done)
 	    (else
 	     (f)
-	     (repeat f (- n 1)))))))
+	     (repeat f (- n 1)))))
+
+    (define (interactive-select options)
+      (cond
+       ((eq? options '()) #f)
+       ((eq? '() (cdr options))
+	(car options))
+       (else
+	(display "Select One: ") (newline)
+	(indexed-for-each (lambda (opt i)
+			    (display (format "~a : ~a\n" i opt)))
+			  options)
+	(display ":: ")
+	(let ((n (read)))
+	  (cond
+	   ((and (number? n)
+		 (between-inclusive? n 0 (- (length options) 1)))
+	    (list-ref options n))
+	   (else
+	    (display "Bad choice!!")
+	    (newline)
+	    (interactive-select options)))))))))
 
