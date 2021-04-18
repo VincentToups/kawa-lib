@@ -1,6 +1,7 @@
 (define-library
     (lib shadchen-helpers)
-  (export eq?* pattern-bindings-equal? all-identifiers? pattern-bindings-raw)
+  (export eq?* pattern-bindings-equal? all-identifiers? pattern-bindings-raw
+	  reduce symbol-concat prepend-pattern ensure-string)
   (import (kawa base)
 	  (kawa lib std_syntax)
 	  (srfi 28)
@@ -126,4 +127,23 @@
 	    ((identifier? (car syntax-list))
 	     (all-identifiers? (cdr syntax-list)))
 	    (else #f)))
-    ))
+
+    (define (ensure-string s)
+	  (cond ((string? s) s)
+		((symbol? s) (symbol->string s))
+		(else (error "define-pattern: ensure-string: got a non-string."))))
+    (define (reduce f-it-ac acc lst)
+      (cond ((eq? lst '())
+		 acc)
+	    (else
+	     (reduce f-it-ac (f-it-ac (car lst) acc) (cdr lst)))))
+    (define (symbol-concat delim . symbols/strings)
+      (string->symbol
+       (reduce (lambda (it ac)
+		 (string-append (ensure-string ac) (ensure-string delim) (ensure-string it)))
+		   (car symbols/strings)
+		   (cdr symbols/strings))))
+    (define (prepend-pattern name-syntax)
+      (datum->syntax-object
+       name-syntax
+       (symbol-concat "//" 'pattern (syntax->datum name-syntax))))))

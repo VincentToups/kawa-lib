@@ -1,0 +1,13 @@
+(define-library (lib xformat)
+  (export xformat)
+  (import (kawa base))
+  (begin
+    (define (make-nicer o)
+      (cond ((procedure? o)
+	     (let* ((proc :: gnu.mapping.Procedure o)
+		    (name (or (proc:getName) "anonymous-function"))
+		    (loc (or (proc:getSourceLocation) "unknown-location")))
+	       (format "#<procedure ~a : ~a>" name loc)))
+	    (else o)))
+    (define (xformat format-string . args)
+      (apply format (cons format-string (map make-nicer args))))))

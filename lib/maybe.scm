@@ -6,8 +6,19 @@
   (begin
     (define-simple-class Maybe ())
     (define-simple-class Just (Maybe)
-      (value))
-    (define-simple-class Nothing (Maybe))
+      (value)
+      ((toString)
+       (format "(Just ~a)" value)))
+    (define-simple-class Nothing (Maybe)
+      (meta-data init: #f)
+      ((*init*)
+       'default-constructor)
+      ((*init* some-meta-data)
+       (set! meta-data some-meta-data))
+      ((toString)
+       (if meta-data
+	   (format "(Nothing ~a)" meta-data)
+	   "(Nothing)")))
 
     (define (just-instance? x)
       (instance? x Just))

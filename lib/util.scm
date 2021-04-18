@@ -1,35 +1,37 @@
 (define-library (lib util)
   (export
-   dsp
-   dbg
-   plist-get
-   plist-get-or-error
-   modulo=0
-   between-inclusive?
-   random-float
-   random-int
-   empty?
+   ..
    all-satisfy?
-   flor
-   fland
    assert
+   between-inclusive?
+   chain
+   dbg
+   dsp
+   empty?
+   fland
+   flor
+   get-class-loader
+   indexed-for-each
+   interactive-select
+   java-null?
+   lambda-named
    list-empty?
-   repeat
-   tabulate
-   print-tabulation
-   table
-   table$
-   order-table
    list-of-numbers?
    list-of-symbols?
-   java-null?
+   modulo=0
    not-java-null?
-   ..
-   chain
-   repeat-accumulate
+   order-table
    pi
-   indexed-for-each
-   interactive-select)
+   plist-get
+   plist-get-or-error
+   print-tabulation
+   random-float
+   random-int
+   repeat
+   repeat-accumulate
+   table
+   table$
+   tabulate)
   (import (except (kawa base) match)
 	  (rnrs hashtables (6))
 	  (rnrs sorting (6))
@@ -40,6 +42,16 @@
 	  (class java.lang.reflect Method)
 	  (class java.lang Thread))
   (begin
+
+    (define-syntax lambda-named
+      (lambda (expr)
+	(syntax-case expr ()
+	  ((_ name (arg ...) body ...)
+	   (identifier? #'name)
+	   #'(begin
+	       (define (name arg ...)
+		 body ...)
+	       name)))))
 
     (define pi 3.1415926535)
 

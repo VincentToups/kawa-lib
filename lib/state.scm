@@ -1,5 +1,16 @@
 (define-library (lib state)
-  (export begin-state state-instance? state-result-instance? state-result-state state-result-value store retrieve State State-Result state-return state-bind)
+  (export
+   begin-state
+   state-instance?
+   state-result-instance?
+   state-result-state
+   state-result-value
+   store
+   retrieve
+   State
+   State-Result
+   state-return
+   state-bind)
   (import (except (kawa base) match)
 	  (lib shadchen)
 	  (lib do-notation))
