@@ -154,6 +154,9 @@
 		      (match1-or-fail ref pat body0 body ...))
 		    *shadchen-fail*))))))
 
+    (define (truthy? x)
+      (not (eq? x #f)))
+
 
     (define-syntax match1-or-fail
       (lambda (expr)
@@ -175,6 +178,16 @@
 			 (string=? v #'x))
 		    (begin body0 body ...)
 		    *shadchen-fail*)))
+	  ((_ value #f body0 body ...)
+	   #'(let ((v value))
+	       (if* (eq? v #f)
+		    (begin body0 body ...)
+		    *shadchen-fail*)))
+	  ((_ value #t body0 body ...)
+	   #'(let ((v value))
+	       (if* (eq? v #f)
+		    (begin body0 body ...)
+		    *shadchen-fail*)))
 	  ((_ value (hd tl ...) body0 body ...)
 	   (let ((hd-symbol (syntax->datum #'hd)))
 	     (case hd-symbol
@@ -186,6 +199,7 @@
 	       ((list?) #'(match1-or-fail value (? list? tl ...) body0 body ...))
 	       ((vector?) #'(match1-or-fail value (? vector? tl ...) body0 body ...))
 	       ((char?) #'(match1-or-fail value (? char? tl ...) body0 body ...))
+	       ((truthy?) #'(match1-or-fail value (? truthy? tl ...) body0 body ...))
 	       ((procedure?) #'(match1-or-fail value (? procedure? tl ...) body0 body ...))
 	       ((hashtable?) #'(match1-or-fail value (? hashtable? tl ...) body0 body ...))
 	       ((call) #'(match-call value (tl ...) body0 body ...))
