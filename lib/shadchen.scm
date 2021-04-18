@@ -185,7 +185,7 @@
 		    *shadchen-fail*)))
 	  ((_ value #t body0 body ...)
 	   #'(let ((v value))
-	       (if* (eq? v #f)
+	       (if* (eq? v #t)
 		    (begin body0 body ...)
 		    *shadchen-fail*)))
 	  ((_ value (hd tl ...) body0 body ...)
